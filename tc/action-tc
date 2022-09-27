@@ -1,0 +1,59 @@
+name: Whitesource Scan
+description: Runs the Whitesource scan
+inputs:
+  api-key:
+    description: Use the TC_WHITESOURCE_API_KEY organization secret.
+    required: true
+  scan-target:
+    description: |
+      Use values: default-branch, feature-branch or pull-request.
+      Default branch targets the Trimble Connect product, and the feature branch targets the Sandbox - Trimble Connect product.
+      Sandbox projects are not reported to the Security Portal (TSP), and simultaneous scans overriding each other is not such a big issue.
+    required: true
+  checkout:
+    description: Use checkout action to get the sources. Use 'false' if checkout is already done. Default value is false.
+    required: false
+    default: "false"
+  google-chat-webhook:
+    description: Add the optional Google Chat webhook as a repository secret, leave empty if chat notifications are not used.
+    required: false
+  scan-folder:
+    description: |
+      Use to pass in a different location for scanning.
+      By default, scanning and config file resolution happens from the repo root.
+    required: false
+  config-file:
+    description: |
+      Use to pass in the config file name.
+      By default, the config file resolution looks for three files: wss-unified-agent.config, whitesource-fs-agent.config or wss.config, 
+      starting from the repo root, or the provided scanning folder.
+    required: false
+  nuget-version:
+    description: Pass the nuget version to be used, to use the default nuget setup.
+    required: false
+  dotnet-solution:
+    description: Pass the dotnet solution path. Use with nuget default setup.
+    required: false
+  dotnet-version:
+    description: Pass the dotnet version to be used, to use the default dotnet setup.
+    required: false
+  store-artifacts:
+    description: Set to true to store scanning artifacts, otherwise use false.
+    default: "false"
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Checkout files
+      if: ${{ inputs.checkout == 'true' }}
+      uses: actions/checkout@v3
+
+    - name: Run scanner
+      env:
+        WS_APIKEY: ${{inputs.api-key}}
+        WS_WSS_URL: https://saas.whitesourcesoftware.com/agent
+        WS_SCAN_TARGET: ${{inputs.scan-target}}
+        SCAN_FOLDER: ${{inputs.scan-folder}}
+        CONFIG_FILE: ${{inputs.config-file}}
+      run: ${{ github.action_path }}/wss.sh
+      shell: bash
