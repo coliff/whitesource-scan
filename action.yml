@@ -21,12 +21,12 @@ runs:
 
     - name: Run scanner
       env:
-        WS_APIKEY: ${{inputs.api-key}}
-        WS_WSS_URL: https://saas.whitesourcesoftware.com/agent
-        WS_SCAN_TARGET: ${{inputs.scan-target}}
-        SCAN_FOLDER: ${{inputs.scan-folder}}
-        CONFIG_FILE: ${{inputs.config-file}}
-      run: wss.sh
+        WS_APIKEY: ${{inputs.apiKey}}
+        WS_WSSURL: https://saas.whitesourcesoftware.com/agent
+        WS_PROJECTNAME: ${{inputs.projectName}}
+        WS_PRODUCTNAME: ${{inputs.productName}}
+        WS_CONFIGFILE: ${{inputs.configFile}}
+      run: ${{ github.action_path }}/wss.sh
       shell: bash
 
     - name: Whitesource Scan error

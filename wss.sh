@@ -8,21 +8,21 @@ if [ -z "$WS_APIKEY" ]; then
 fi
 
 PROJECT_NAME_STR=""
-if [ -z "$INPUT_PROJECTNAME" ]; then
+if [ -z "$WS_PROJECTNAME" ]; then
   IFS='/' read -a GH_REPO <<< "$GITHUB_REPOSITORY"
   PROJECT_NAME_STR="${GH_REPO[1]}"
 else
-  PROJECT_NAME_STR="$INPUT_PROJECTNAME"
+  PROJECT_NAME_STR="$WS_PROJECTNAME"
 fi
 
-if [ -z "$INPUT_CONFIGFILE" ] && [ -z "$PROJECT_NAME_STR" ]; then
+if [ -z "$WS_CONFIGFILE" ] && [ -z "$PROJECT_NAME_STR" ]; then
   echo "'projectName' or 'configFile' path must be set."
   exit 126
 fi
 
 PRODUCT_NAME_STR=""
-if [ -n "$INPUT_PRODUCTNAME" ]; then
-  PRODUCT_NAME_STR="-product $INPUT_PRODUCTNAME"
+if [ -n "$WS_PRODUCTNAME" ]; then
+  PRODUCT_NAME_STR="-product $WS_PRODUCTNAME"
 fi
 
 
@@ -39,11 +39,11 @@ unset GOROOT
 # don't exit if unified agent exits with error code
 set +e
 # Execute Unified Agent (2 settings)
-if [ -z  "$INPUT_CONFIGFILE" ]; then
-  java -jar wss-unified-agent.jar -noConfig true -apiKey $INPUT_APIKEY -project "$PROJECT_NAME_STR" $PRODUCT_NAME_STR\
-    -d . -wss.url $INPUT_WSSURL -resolveAllDependencies true
+if [ -z  "$WS_CONFIGFILE" ]; then
+  java -jar wss-unified-agent.jar -noConfig true -apiKey $WS_APIKEY -project "$PROJECT_NAME_STR" $PRODUCT_NAME_STR\
+    -d . -wss.url $WS_WSSURL -resolveAllDependencies true
 else
-  java -jar wss-unified-agent.jar -apiKey $INPUT_APIKEY -c "$INPUT_CONFIGFILE" -d .
+  java -jar wss-unified-agent.jar -apiKey $WS_APIKEY -c "$WS_CONFIGFILE" -d .
 fi
 
 WS_EXIT_CODE=$?
